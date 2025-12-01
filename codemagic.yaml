@@ -64,7 +64,7 @@ workflows:
             -scheme App \
             -sdk iphonesimulator \
             -configuration Debug \
-            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -destination 'generic/platform=iOS Simulator' \
             build
     artifacts:
       - /tmp/xcodebuild_logs/*.log
