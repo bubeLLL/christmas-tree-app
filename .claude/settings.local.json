@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmd /c \"npm install\")",
+      "Bash(cd:*)",
+      "Bash(npm install:*)",
+      "Bash(npx cap init:*)",
+      "Bash(npx cap:*)",
+      "Bash(npm run build:win:*)",
+      "Bash(cmd.exe /c \"npm run build:win\")",
+      "Bash(cmd.exe /c \"cd /d C:\\Users\\btj03\\Downloads\\christmas-tree-app && npx electron-builder --win --x64\")",
+      "Bash(cmd.exe /c \"cd /d C:\\Users\\btj03\\Downloads\\christmas-tree-app && node node_modules\\electron-builder\\out\\cli\\cli.js --win --x64\":*)",
+      "Bash(cmd.exe /c \"dir C:\\Users\\btj03\\Downloads\\christmas-tree-app\\dist\\*.exe\")",
+      "Bash(python3:*)",
+      "Bash(cmd.exe /c \"cd /d C:\\Users\\btj03\\Downloads\\christmas-tree-app\\android && gradlew.bat assembleDebug\")",
+      "Bash(cmd.exe /c \"dir C:\\Users\\btj03\\AppData\\Local\\Android\\Sdk 2>nul && echo SDK found || echo SDK not found\")",
+      "Bash(cmd.exe /c \"where adb 2>nul || echo adb not in PATH\")",
+      "Bash(cmd.exe /c \"dir C:\\Android 2>nul || echo No C:\\Android\")",
+      "Bash(cmd.exe /c \"echo %ANDROID_HOME%\")",
+      "Bash(cmd.exe /c:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
