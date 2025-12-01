@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Christmas Tree</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      background: linear-gradient(to bottom, #0a1628 0%, #1a2a4a 50%, #2d3a5a 100%);
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #tree {
+      position: absolute;
+      z-index: 2;
+      touch-action: none;
+    }
+
+    #snow {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    /* Кнопка настроек */
+    #settings-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.7);
+      border: 2px solid rgba(255,255,255,0.3);
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Панель настроек */
+    #settings-panel {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(20, 30, 50, 0.98);
+      border-radius: 20px 20px 0 0;
+      padding: 20px;
+      padding-bottom: 40px;
+      z-index: 100;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+    }
+    #settings-panel.show {
+      transform: translateY(0);
+    }
+
+    .settings-handle {
+      width: 40px;
+      height: 4px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 2px;
+      margin: 0 auto 16px;
+    }
+
+    .settings-title {
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .setting-group {
+      margin-bottom: 18px;
+    }
+    .setting-label {
+      color: rgba(255,255,255,0.8);
+      font-size: 14px;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .setting-row {
+      display: flex;
+      gap: 8px;
+    }
+    .setting-btn {
+      flex: 1;
+      padding: 12px 8px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border-radius: 10px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .setting-btn.active {
+      background: #4CAF50;
+      border-color: #4CAF50;
+    }
+
+    .color-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    .color-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.3);
+      cursor: pointer;
+    }
+    .color-btn.active {
+      border-color: white;
+      transform: scale(1.1);
+    }
+
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .slider {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 8px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.2);
+    }
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #4CAF50;
+    }
+    .slider-value {
+      color: white;
+      font-size: 14px;
+      min-width: 35px;
+      text-align: right;
+    }
+
+    .power-btn {
+      width: 100%;
+      padding: 16px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .power-btn.on {
+      background: #f44336;
+      color: white;
+    }
+    .power-btn.off {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 99;
+      display: none;
+    }
+    .overlay.show { display: block; }
+  </style>
+</head>
+<body>
+  <div id="canvas-container">
+    <canvas id="snow"></canvas>
+    <canvas id="tree"></canvas>
+  </div>
+
+  <button id="settings-btn">⚙</button>
+
+  <div class="overlay" id="overlay"></div>
+
+  <div id="settings-panel">
+    <div class="settings-handle"></div>
+    <div class="settings-title">Настройки</div>
+
+    <div class="setting-group">
+      <span class="setting-label">Снег</span>
+      <div class="setting-row">
+        <button class="setting-btn" data-snow="off">Выкл</button>
+        <button class="setting-btn" data-snow="tree">Над ёлкой</button>
+        <button class="setting-btn active" data-snow="all">Везде</button>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label">Количество снега</span>
+      <div class="slider-container">
+        <input type="range" class="slider" id="snow-amount" min="50" max="300" value="150">
+        <span class="slider-value" id="snow-value">150</span>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label">Скорость вращения</span>
+      <div class="slider-container">
+        <input type="range" class="slider" id="rotation-speed" min="1" max="20" value="8">
+        <span class="slider-value" id="rotation-value">8</span>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label">Цвет огоньков</span>
+      <div class="color-row">
+        <button class="color-btn active" data-color="white" style="background: white;"></button>
+        <button class="color-btn" data-color="gold" style="background: gold;"></button>
+        <button class="color-btn" data-color="red" style="background: #ff4444;"></button>
+        <button class="color-btn" data-color="blue" style="background: #44aaff;"></button>
+        <button class="color-btn" data-color="green" style="background: #44ff88;"></button>
+        <button class="color-btn" data-color="rainbow" style="background: linear-gradient(90deg, red, yellow, green, blue, purple);"></button>
+      </div>
+    </div>
+
+    <button class="power-btn on" id="power-btn">Выключить</button>
+  </div>
+
+  <script>
+    const settings = {
+      snowMode: 'all',
+      snowAmount: 150,
+      rotationSpeed: 8,
+      color: 'white',
+      isOn: true
+    };
+
+    const treeCanvas = document.getElementById('tree');
+    const treeCtx = treeCanvas.getContext('2d');
+    const snowCanvas = document.getElementById('snow');
+    const snowCtx = snowCanvas.getContext('2d');
+
+    const screenW = window.innerWidth;
+    const screenH = window.innerHeight;
+
+    const treeSize = Math.min(screenW, screenH) * 0.7;
+    treeCanvas.width = treeCanvas.height = treeSize;
+    snowCanvas.width = screenW;
+    snowCanvas.height = screenH;
+
+    const T = Math.PI * 2;
+    const treeParticles = [];
+    let snowParticles = [];
+
+    const mapRange = (v, a, b, c, d) => ((v - a) * (d - c)) / (b - a) + c;
+
+    const rainbowColors = ['#ff4444', '#ffaa00', '#ffff44', '#44ff44', '#44aaff', '#aa44ff', '#ff44aa'];
+
+    const treeCount = 250;
+    for (let i = 0; i < treeCount; i++) {
+      treeParticles.push({
+        cx: treeSize / 2,
+        cy: mapRange(i, 0, treeCount, treeSize * 0.15, treeSize * 0.88),
+        r: i < treeCount * 0.9 ? mapRange(i, 0, treeCount, 1, treeSize * 0.36) : 8,
+        dot: treeSize / 120,
+        prog: Math.random(),
+        s: 1,
+        pulsePhase: Math.random() * T,
+        speed: 0.0008,
+        colorIndex: i % rainbowColors.length
+      });
+    }
+
+    function createSnowflakes(count) {
+      snowParticles = [];
+      for (let i = 0; i < count; i++) {
+        snowParticles.push({
+          x: Math.random() * screenW,
+          y: Math.random() * screenH,
+          r: 1 + Math.random() * 3,
+          a: 0.3 + Math.random() * 0.7,
+          speed: 0.5 + Math.random() * 1.5,
+          wind: (Math.random() - 0.5) * 0.3
+        });
+      }
+    }
+    createSnowflakes(settings.snowAmount);
+
+    function getColor(particle) {
+      if (settings.color === 'rainbow') {
+        return rainbowColors[particle.colorIndex];
+      }
+      const colors = {
+        white: '#ffffff',
+        gold: '#ffd700',
+        red: '#ff4444',
+        blue: '#44aaff',
+        green: '#44ff88'
+      };
+      return colors[settings.color] || '#ffffff';
+    }
+
+    function drawTree() {
+      treeCtx.clearRect(0, 0, treeSize, treeSize);
+      if (!settings.isOn) return;
+
+      for (const p of treeParticles) {
+        p.prog = (p.prog + p.speed * settings.rotationSpeed) % 1;
+        p.pulsePhase += 0.018;
+        p.s = 0.65 + Math.sin(p.pulsePhase) * 0.35;
+
+        const angle = p.prog * T;
+        const x = Math.cos(angle) * p.r + p.cx;
+        const y = Math.sin(angle) * p.r * 0.22 + p.cy;
+
+        treeCtx.fillStyle = getColor(p);
+        treeCtx.beginPath();
+        treeCtx.arc(x, y, p.dot * p.s, 0, T);
+        treeCtx.fill();
+      }
+    }
+
+    function drawSnow() {
+      snowCtx.clearRect(0, 0, screenW, screenH);
+      if (!settings.isOn || settings.snowMode === 'off') return;
+
+      snowCtx.fillStyle = '#fff';
+
+      for (const s of snowParticles) {
+        s.y += s.speed;
+        s.x += s.wind;
+
+        if (s.y > screenH) {
+          s.y = -5;
+          s.x = Math.random() * screenW;
+        }
+        if (s.x > screenW) s.x = 0;
+        if (s.x < 0) s.x = screenW;
+
+        if (settings.snowMode === 'tree') {
+          const treeCenterX = treeX + treeSize / 2;
+          const treeCenterY = treeY + treeSize / 2;
+          const dist = Math.sqrt((s.x - treeCenterX) ** 2 + (s.y - treeCenterY) ** 2);
+          if (dist > treeSize * 0.7) continue;
+        }
+
+        snowCtx.globalAlpha = s.a;
+        snowCtx.beginPath();
+        snowCtx.arc(s.x, s.y, s.r, 0, T);
+        snowCtx.fill();
+      }
+    }
+
+    function render() {
+      drawTree();
+      drawSnow();
+      requestAnimationFrame(render);
+    }
+
+    // Позиция ёлки
+    let treeX = (screenW - treeSize) / 2;
+    let treeY = screenH - treeSize - 50;
+    treeCanvas.style.left = treeX + 'px';
+    treeCanvas.style.top = treeY + 'px';
+
+    // Перетаскивание
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    treeCanvas.addEventListener('touchstart', (e) => {
+      isDragging = true;
+      const touch = e.touches[0];
+      offsetX = touch.clientX - treeX;
+      offsetY = touch.clientY - treeY;
+      e.preventDefault();
+    }, { passive: false });
+
+    document.addEventListener('touchmove', (e) => {
+      if (isDragging) {
+        const touch = e.touches[0];
+        treeX = touch.clientX - offsetX;
+        treeY = touch.clientY - offsetY;
+        treeCanvas.style.left = treeX + 'px';
+        treeCanvas.style.top = treeY + 'px';
+      }
+    }, { passive: false });
+
+    document.addEventListener('touchend', () => {
+      isDragging = false;
+    });
+
+    // Панель настроек
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsPanel = document.getElementById('settings-panel');
+    const overlay = document.getElementById('overlay');
+
+    function toggleSettings() {
+      settingsPanel.classList.toggle('show');
+      overlay.classList.toggle('show');
+    }
+
+    settingsBtn.addEventListener('click', toggleSettings);
+    overlay.addEventListener('click', toggleSettings);
+
+    // Обработчики
+    document.querySelectorAll('[data-snow]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-snow]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        settings.snowMode = btn.dataset.snow;
+      });
+    });
+
+    document.getElementById('snow-amount').addEventListener('input', (e) => {
+      settings.snowAmount = parseInt(e.target.value);
+      document.getElementById('snow-value').textContent = settings.snowAmount;
+      createSnowflakes(settings.snowAmount);
+    });
+
+    document.getElementById('rotation-speed').addEventListener('input', (e) => {
+      settings.rotationSpeed = parseInt(e.target.value);
+      document.getElementById('rotation-value').textContent = settings.rotationSpeed;
+    });
+
+    document.querySelectorAll('[data-color]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-color]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        settings.color = btn.dataset.color;
+      });
+    });
+
+    const powerBtn = document.getElementById('power-btn');
+    powerBtn.addEventListener('click', () => {
+      settings.isOn = !settings.isOn;
+      powerBtn.textContent = settings.isOn ? 'Выключить' : 'Включить';
+      powerBtn.className = 'power-btn ' + (settings.isOn ? 'on' : 'off');
+    });
+
+    render();
+  </script>
+</body>
+</html>

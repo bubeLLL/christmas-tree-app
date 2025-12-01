@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Christmas Tree</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      background: transparent;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+    }
+    #tree {
+      position: absolute;
+      z-index: 2;
+      cursor: grab;
+    }
+    #tree.dragging { cursor: grabbing; }
+    #snow {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="snow"></canvas>
+  <canvas id="tree"></canvas>
+
+  <script>
+    const settings = {
+      isOn: true,
+      snowMode: 'all',
+      color: 'white',
+      speed: 8
+    };
+
+    const treeCanvas = document.getElementById('tree');
+    const treeCtx = treeCanvas.getContext('2d', { alpha: true });
+    const snowCanvas = document.getElementById('snow');
+    const snowCtx = snowCanvas.getContext('2d', { alpha: true });
+
+    const screenW = window.innerWidth;
+    const screenH = window.innerHeight;
+
+    const treeSize = 300;
+    treeCanvas.width = treeCanvas.height = treeSize;
+    snowCanvas.width = screenW;
+    snowCanvas.height = screenH;
+
+    const T = Math.PI * 2;
+    const treeParticles = [];
+    const snowParticles = [];
+
+    const mapRange = (v, a, b, c, d) => ((v - a) * (d - c)) / (b - a) + c;
+    const rainbowColors = ['#ff4444', '#ffaa00', '#ffff44', '#44ff44', '#44aaff', '#aa44ff', '#ff44aa'];
+
+    // Частицы ёлки
+    const treeCount = 250;
+    for (let i = 0; i < treeCount; i++) {
+      treeParticles.push({
+        cx: treeSize / 2,
+        cy: mapRange(i, 0, treeCount, treeSize * 0.15, treeSize * 0.88),
+        r: i < treeCount * 0.9 ? mapRange(i, 0, treeCount, 1, treeSize * 0.36) : 8,
+        dot: 2,
+        prog: Math.random(),
+        s: 1,
+        pulsePhase: Math.random() * T,
+        speed: 0.0008,
+        colorIndex: i % rainbowColors.length
+      });
+    }
+
+    // Снежинки
+    const snowCount = 300;
+    for (let i = 0; i < snowCount; i++) {
+      snowParticles.push({
+        x: Math.random() * screenW,
+        y: Math.random() * screenH,
+        r: 1 + Math.random() * 3,
+        a: 0.3 + Math.random() * 0.7,
+        speed: 0.5 + Math.random() * 1.5,
+        wind: (Math.random() - 0.5) * 0.5
+      });
+    }
+
+    function getColor(particle) {
+      if (settings.color === 'rainbow') {
+        return rainbowColors[particle.colorIndex];
+      }
+      const colors = {
+        white: '#ffffff',
+        gold: '#ffd700',
+        red: '#ff4444',
+        blue: '#44aaff',
+        green: '#44ff88'
+      };
+      return colors[settings.color] || '#ffffff';
+    }
+
+    function drawTree() {
+      treeCtx.clearRect(0, 0, treeSize, treeSize);
+      if (!settings.isOn) return;
+
+      for (const p of treeParticles) {
+        p.prog = (p.prog + p.speed * settings.speed) % 1;
+        p.pulsePhase += 0.018;
+        p.s = 0.65 + Math.sin(p.pulsePhase) * 0.35;
+
+        const angle = p.prog * T;
+        const x = Math.cos(angle) * p.r + p.cx;
+        const y = Math.sin(angle) * p.r * 0.22 + p.cy;
+
+        treeCtx.fillStyle = getColor(p);
+        treeCtx.strokeStyle = getColor(p).replace(')', ', 0.3)').replace('rgb', 'rgba').replace('#', 'rgba(').replace(/(.{2})(.{2})(.{2})/, (m, r, g, b) => `rgba(${parseInt(r,16)},${parseInt(g,16)},${parseInt(b,16)},0.3)`);
+
+        treeCtx.beginPath();
+        treeCtx.arc(x, y, p.dot * p.s * 0.8, 0, T);
+        treeCtx.fill();
+      }
+    }
+
+    function drawSnow() {
+      snowCtx.clearRect(0, 0, screenW, screenH);
+      if (!settings.isOn || settings.snowMode === 'off') return;
+
+      snowCtx.fillStyle = '#fff';
+
+      for (const s of snowParticles) {
+        s.y += s.speed;
+        s.x += s.wind;
+
+        if (s.y > screenH) {
+          s.y = -5;
+          s.x = Math.random() * screenW;
+        }
+        if (s.x > screenW) s.x = 0;
+        if (s.x < 0) s.x = screenW;
+
+        if (settings.snowMode === 'tree') {
+          if (s.x < treeX - 50 || s.x > treeX + 350 || s.y < treeY - 50 || s.y > treeY + 350) {
+            continue;
+          }
+        }
+
+        snowCtx.globalAlpha = s.a;
+        snowCtx.beginPath();
+        snowCtx.arc(s.x, s.y, s.r, 0, T);
+        snowCtx.fill();
+      }
+    }
+
+    function render() {
+      drawTree();
+      drawSnow();
+      requestAnimationFrame(render);
+    }
+
+    // Позиция ёлки
+    let treeX = screenW - 350;
+    let treeY = screenH - 350;
+    treeCanvas.style.left = treeX + 'px';
+    treeCanvas.style.top = treeY + 'px';
+
+    // Перетаскивание
+    let isDragging = false;
+    let dragOffsetX = 0, dragOffsetY = 0;
+    let isOverTree = false;
+    let lastMouseX = 0, lastMouseY = 0;
+
+    function checkCursor() {
+      if (!window.electronAPI) return;
+
+      window.electronAPI.getCursorPosition((pos) => {
+        lastMouseX = pos.x;
+        lastMouseY = pos.y;
+
+        const overTree = pos.x >= treeX && pos.x <= treeX + 300 &&
+                         pos.y >= treeY && pos.y <= treeY + 300;
+
+        if (overTree && !isOverTree) {
+          isOverTree = true;
+          window.electronAPI.setIgnoreMouseEvents(false);
+        } else if (!overTree && isOverTree && !isDragging) {
+          isOverTree = false;
+          window.electronAPI.setIgnoreMouseEvents(true);
+        }
+
+        if (isDragging) {
+          treeX = pos.x - dragOffsetX;
+          treeY = pos.y - dragOffsetY;
+          treeCanvas.style.left = treeX + 'px';
+          treeCanvas.style.top = treeY + 'px';
+        }
+      });
+    }
+
+    setInterval(checkCursor, 16);
+
+    treeCanvas.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      treeCanvas.classList.add('dragging');
+      dragOffsetX = lastMouseX - treeX;
+      dragOffsetY = lastMouseY - treeY;
+      e.preventDefault();
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (isDragging) {
+        isDragging = false;
+        treeCanvas.classList.remove('dragging');
+      }
+    });
+
+    // Получение настроек из трея
+    if (window.electronAPI && window.electronAPI.onSettingsUpdate) {
+      window.electronAPI.onSettingsUpdate((newSettings) => {
+        settings.isOn = newSettings.isOn;
+        settings.snowMode = newSettings.snowMode;
+        settings.color = newSettings.color;
+        settings.speed = newSettings.speed;
+      });
+    }
+
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Tree</title>
+  <style>
+    * { margin: 0; padding: 0; }
+    html, body {
+      background: transparent;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      -webkit-app-region: drag;
+      cursor: grab;
+    }
+    body:active {
+      cursor: grabbing;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="tree"></canvas>
+  <script>
+    const canvas = document.getElementById('tree');
+    const ctx = canvas.getContext('2d', { alpha: true });
+
+    const size = 200;
+    canvas.width = canvas.height = size;
+
+    const T = Math.PI * 2;
+    const particles = [];
+    const count = 250;
+
+    const mapRange = (value, inMin, inMax, outMin, outMax) => {
+      return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+    };
+
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        cx: size / 2,
+        cy: mapRange(i, 0, count, size * 0.15, size * 0.88),
+        r: i < count * 0.9 ? mapRange(i, 0, count, 1, size * 0.36) : 8,
+        dot: 2,
+        prog: Math.random(),
+        s: 1,
+        pulsePhase: Math.random() * T,
+        speed: 0.0008
+      });
+    }
+
+    ctx.fillStyle = '#fff';
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.globalCompositeOperation = 'lighter';
+
+    function render() {
+      ctx.clearRect(0, 0, size, size);
+
+      for (const p of particles) {
+        p.prog = (p.prog + p.speed) % 1;
+        p.pulsePhase += 0.018;
+        p.s = 0.65 + Math.sin(p.pulsePhase) * 0.35;
+
+        const angle = p.prog * T;
+        const x = Math.cos(angle) * p.r + p.cx;
+        const y = Math.sin(angle) * p.r * 0.22 + p.cy;
+
+        ctx.beginPath();
+        ctx.arc(x, y, p.dot * p.s, 0, T);
+        ctx.fill();
+        ctx.lineWidth = p.dot * p.s * 1.5;
+        ctx.stroke();
+      }
+
+      requestAnimationFrame(render);
+    }
+
+    render();
+  </script>
+</body>
+</html>

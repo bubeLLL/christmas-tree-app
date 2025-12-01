@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+
+# iOS
+ios/App/Pods/
+ios/App/App/public/
+ios/capacitor-cordova-ios-plugins/
+
+# Android
+android/app/build/
+android/app/src/main/assets/public/
+
+# Capacitor
+capacitor.config.json
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*

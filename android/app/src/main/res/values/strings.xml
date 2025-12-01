@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Christmas Tree</string>
+    <string name="title_activity_main">Christmas Tree</string>
+    <string name="package_name">com.christmas.tree</string>
+    <string name="custom_url_scheme">com.christmas.tree</string>
+</resources>
