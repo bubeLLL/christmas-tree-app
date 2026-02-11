@@ -1,9 +1,9 @@
 /**
- * Pentest Panel Integration for JOOMLA
+ * Интеграция пентест панели для JOOMLA
  * 
- * Installation Instructions:
- * 1. Add this code to your template's index.php
- * 2. Or create a custom plugin
+ * Инструкции по установке:
+ * 1. Добавьте этот код в index.php вашего шаблона
+ * 2. Или создайте кастомный плагин
  */
 
 <?php

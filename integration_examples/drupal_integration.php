@@ -1,9 +1,9 @@
 /**
- * Pentest Panel Integration for DRUPAL
+ * Интеграция пентест панели для DRUPAL
  * 
- * Installation Instructions:
- * 1. Add this code to your theme or custom module
- * 2. Clear cache after adding
+ * Инструкции по установке:
+ * 1. Добавьте этот код в вашу тему или кастомный модуль
+ * 2. Очистите кэш после добавления (drush cr)
  */
 
 <?php

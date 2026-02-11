@@ -1,11 +1,11 @@
 /**
- * Pentest Panel Integration for WORDPRESS
+ * Интеграция пентест панели для WORDPRESS
  * 
- * Installation Instructions:
- * 1. Open your theme's functions.php file
- * 2. Or create a custom plugin in wp-content/plugins/
- * 3. Add this code to the file
- * 4. Save and refresh your site
+ * Инструкции по установке:
+ * 1. Откройте файл functions.php вашей темы
+ * 2. Или создайте кастомный плагин в wp-content/plugins/
+ * 3. Добавьте этот код в файл
+ * 4. Сохраните и обновите сайт
  */
 
 <?php
