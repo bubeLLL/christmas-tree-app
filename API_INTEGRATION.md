@@ -4,6 +4,8 @@
 
 **Base URL:** `https://ipv6app.bar/public_api.php`
 
+**Interactive Documentation:** https://ipv6app.bar/api_docs.html
+
 ### Supported Engines
 
 | Engine | Description | Usage |
